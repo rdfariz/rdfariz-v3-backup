@@ -1,0 +1,29 @@
+.page-enter-active, .page-leave-active {
+  transition: all 0.35s;
+}
+
+.page-enter, .page-leave-active {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.xlide-enter-active, .xlide-leave-active {
+  transition: all 0.35s;
+}
+.xlide-enter, .xlide-leave-active {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.transitionCustom {
+  transition: 1s ease !important;
+}
+
+.linkCustom {
+  text-decoration: none;
+  color: unset !important;
+}
+
+a {
+  text-decoration: none !important;
+}
