@@ -7,6 +7,7 @@
       height="86px"
       flat
       color="#FFFFFF"
+      style="border-bottom: 1px solid #f0f0f0;"
     >
       <v-container grid-list-xs>
         <v-layout row wrap justify-center align-center>

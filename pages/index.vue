@@ -216,36 +216,6 @@ export default {
   head: {
     title: 'RdFariz'
   },
-  async asyncData ({ isDev, route, store, env, params, query, req, res, redirect, error }) {
-    let staticData = {}
-    let myWork = []
-    let myWorkCategory = []
-    let myExperience = []
-    let myExperienceCategory = []
-    try {
-      await store.dispatch('getStatic')
-      await store.dispatch('getFeedback')
-      await store.dispatch('getMyWork')
-      await store.dispatch('getMyExperience')
-
-      staticData = store.getters.static
-      myWork = store.getters.myWork
-      myExperience = store.getters.myExperience
-
-      if (staticData.categoryList != undefined) {
-        const categoryList = staticData.categoryList
-        if (categoryList !== undefined && Array.isArray(categoryList.portfolio) && categoryList.portfolio.length > 0) {
-          myWorkCategory = categoryList.portfolio
-        }
-        if (categoryList !== undefined && Array.isArray(categoryList.experience) && categoryList.experience.length > 0) {
-          myExperienceCategory = categoryList.experience
-        }
-      }
-    }catch (e) {
-    }finally {
-      return { myWork, myWorkCategory, myExperience, myExperienceCategory }
-    }
-  },
   data: () => ({
     loadedCover: false,
     showDetailWork: false,
@@ -254,6 +224,18 @@ export default {
   computed: {
     staticData () {
       return this.$store.getters.static
+    },
+    myWork () {
+      return this.$store.getters.myWork
+    },
+    myExperience () {
+      return this.$store.getters.myExperience
+    },
+    myWorkCategory () {
+      return this.$store.getters.myWorkCategory
+    },
+    myExperienceCategory () {
+      return this.$store.getters.myExperienceCategory
     }
   },
   mounted () {

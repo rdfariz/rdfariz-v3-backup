@@ -9,7 +9,9 @@ export const state = () => ({
   myExperience: [],
   isLoading: false,
   allowFavorite: false,
-  isError: false
+  isError: false,
+  myWorkCategory: [],
+  myExperienceCategory: []
 })
 export const getters = {
   static: (state) => {
@@ -29,6 +31,12 @@ export const getters = {
   },
   allowFavorite: (state) => {
     return state.allowFavorite
+  },
+  myWorkCategory: (state) => {
+    return state.myWorkCategory
+  },
+  myExperienceCategory: (state) => {
+    return state.myExperienceCategory
   }
 }
 export const mutations = {
@@ -49,15 +57,38 @@ export const mutations = {
   },
   setAllowFavorite (state, payload) {
     state.allowFavorite = payload
+  },
+  setMyWorkCategory (state, payload) {
+    state.myWorkCategory = payload
+  },
+  setMyExperienceCategory (state, payload) {
+    state.myExperienceCategory = payload
   }
 }
 export const actions = {
+  async nuxtServerInit({ dispatch, commit }, { res }) {
+    await dispatch('getStatic')
+    await dispatch('getMyWork')
+    await dispatch('getMyExperience')
+    await dispatch('getFeedback')
+  },
   async getStatic ({ commit, state }) {
     const ref = this.$fireStore.collection('static').doc('data')
     try {
       if (isObject(state.static)) {
-        await ref.onSnapshot((doc) => {
+        await ref.onSnapshot(async (doc) => {
           commit('setStatic', doc.data())
+
+          const staticData = await doc.data()
+          if (staticData.categoryList !== undefined) {
+            const categoryList = staticData.categoryList
+            if (categoryList !== undefined && Array.isArray(categoryList.portfolio) && categoryList.portfolio.length > 0) {
+              commit('setMyWorkCategory', categoryList.portfolio)
+            }
+            if (categoryList !== undefined && Array.isArray(categoryList.experience) && categoryList.experience.length > 0) {
+              commit('setMyExperienceCategory', categoryList.experience)
+            }
+          }
         })
       }
     } catch (e) {
@@ -117,10 +148,10 @@ export const actions = {
     const ref = this.$fireStore.collection('portfolio').orderBy('order', 'asc')
     try {
       const data = await ref.get()
-      const payload = []
-      await data.docs.forEach((el) => {
-        payload.push(el.data())
+      const promise = data.docs.map(async el => {
+        return await el.data()
       })
+      const payload = await Promise.all(promise)
       await commit('setMyWork', payload)
     } catch (e) {
       await commit('setMyWork', [])
@@ -131,10 +162,10 @@ export const actions = {
     const ref = this.$fireStore.collection('experience').orderBy('order', 'asc')
     try {
       const data = await ref.get()
-      const payload = []
-      await data.docs.forEach((el) => {
-        payload.push(el.data())
+      const promise = data.docs.map(async el => {
+        return await el.data()
       })
+      const payload = await Promise.all(promise)
       await commit('setMyExperience', payload)
     } catch (e) {
       await commit('setMyExperience', [])
